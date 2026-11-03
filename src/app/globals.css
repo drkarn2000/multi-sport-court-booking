@@ -1,0 +1,270 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --green: #1e503e;
+  --deep: #12382b;
+  --lime: #dff27a;
+  --cream: #e8f3ec;
+  --muted: #365043;
+  --line: #bed6c7;
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background-color: #e6f2eb;
+  background-image:
+    radial-gradient(at 8% 6%, rgba(16, 185, 129, 0.16) 0px, transparent 42%),
+    radial-gradient(at 92% 10%, rgba(14, 165, 233, 0.15) 0px, transparent 40%),
+    radial-gradient(at 85% 52%, rgba(250, 204, 21, 0.16) 0px, transparent 44%),
+    radial-gradient(at 12% 68%, rgba(139, 92, 246, 0.11) 0px, transparent 42%),
+    linear-gradient(160deg, #e4f2ea 0%, #edf5e1 36%, #e3f1f2 72%, #f1efe0 100%);
+  background-attachment: fixed;
+  color: #0e271d;
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smooth base interactivity across form controls and interactive elements */
+@layer base {
+  button:not(:disabled),
+  a[href],
+  select:not(:disabled),
+  input[type="checkbox"]:not(:disabled) {
+    transition-property: color, background-color, border-color, transform, box-shadow, opacity;
+    transition-duration: 220ms;
+    transition-timing-function: var(--ease-out-expo);
+  }
+
+  button:not(:disabled):active,
+  a[href]:active {
+    transform: scale(0.985);
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea {
+    transition: border-color 200ms ease, box-shadow 200ms ease, background-color 200ms ease;
+    color: #0e271d;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"])::placeholder,
+  textarea::placeholder {
+    color: #546e60;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):hover:not(:disabled),
+  select:hover:not(:disabled),
+  textarea:hover:not(:disabled) {
+    border-color: #6ea388;
+  }
+
+  input:not([type="checkbox"]):not([type="radio"]):focus,
+  select:focus,
+  textarea:focus {
+    box-shadow: 0 0 0 3px rgba(30, 80, 62, 0.16);
+  }
+}
+
+@layer components {
+  /* Rich signature forest-emerald & ocean-teal hero banner */
+  .pc-hero-banner {
+    background-color: #12382b;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(223, 242, 122, 0.22) 0%, transparent 45%),
+      radial-gradient(circle at 88% 82%, rgba(45, 212, 191, 0.24) 0%, transparent 48%),
+      linear-gradient(130deg, #103226 0%, #1e503e 52%, #134e4a 100%);
+    color: #ffffff;
+    border: 1px solid rgba(223, 242, 122, 0.26);
+    box-shadow: 0 20px 44px rgba(14, 42, 31, 0.18);
+  }
+
+  /* Vibrant multi-tone pastel card surfaces with crisp dark readable text */
+  .pc-surface-mint {
+    background-image: linear-gradient(155deg, #ecf9f1 0%, #e1f4e8 55%, #edf8e2 100%);
+    border-color: #9ed4b3;
+    color: #0e271d;
+  }
+
+  .pc-surface-sky {
+    background-image: linear-gradient(155deg, #eaf6fe 0%, #dff0fc 55%, #e3f7f4 100%);
+    border-color: #97d1ef;
+    color: #0e271d;
+  }
+
+  .pc-surface-amber {
+    background-image: linear-gradient(155deg, #fff9e6 0%, #fef0c7 55%, #eff8d8 100%);
+    border-color: #ebd082;
+    color: #0e271d;
+  }
+
+  .pc-surface-coral {
+    background-image: linear-gradient(155deg, #fff3eb 0%, #ffe6d6 55%, #fef3dc 100%);
+    border-color: #f4be9c;
+    color: #0e271d;
+  }
+
+  .pc-surface-violet {
+    background-image: linear-gradient(155deg, #f3efff 0%, #e8e0ff 55%, #fae9f5 100%);
+    border-color: #c5b4f3;
+    color: #0e271d;
+  }
+
+  .pc-surface-lime {
+    background-image: linear-gradient(155deg, #f4fce0 0%, #e5f4b8 55%, #dff5e8 100%);
+    border-color: #bddb82;
+    color: #0e271d;
+  }
+
+  /* Vibrant alternating section band */
+  .pc-band-vivid {
+    background-image:
+      radial-gradient(at 15% 20%, rgba(223, 242, 122, 0.32) 0px, transparent 50%),
+      radial-gradient(at 85% 80%, rgba(56, 189, 248, 0.18) 0px, transparent 50%),
+      linear-gradient(135deg, #d7ede0 0%, #e5f1cf 50%, #d6eceb 100%);
+    border-top: 1px solid #bcd8c7;
+    border-bottom: 1px solid #bcd8c7;
+  }
+
+  /* Primary elevated card hover */
+  .pc-hover-card {
+    transition: transform 300ms var(--ease-out-expo),
+      box-shadow 300ms var(--ease-out-expo),
+      border-color 300ms var(--ease-out-expo),
+      background-color 300ms var(--ease-out-expo);
+  }
+  .pc-hover-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 40px rgba(18, 56, 43, 0.14);
+    border-color: #6ca687;
+  }
+
+  /* Subtle nested tile / list-card hover */
+  .pc-hover-subcard {
+    transition: transform 240ms var(--ease-out-expo),
+      box-shadow 240ms var(--ease-out-expo),
+      border-color 240ms var(--ease-out-expo),
+      background-color 240ms var(--ease-out-expo);
+  }
+  .pc-hover-subcard:hover {
+    transform: translateY(-2.5px);
+    box-shadow: 0 10px 24px rgba(18, 56, 43, 0.10);
+    border-color: #74ac8e;
+  }
+
+  /* Primary solid CTA button hover */
+  .pc-btn-lift {
+    transition: transform 240ms var(--ease-out-expo),
+      box-shadow 240ms var(--ease-out-expo),
+      background-color 220ms ease,
+      border-color 220ms ease,
+      color 220ms ease;
+  }
+  .pc-btn-lift:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 26px -6px rgba(18, 56, 43, 0.36);
+  }
+  .pc-btn-lift:active:not(:disabled) {
+    transform: translateY(0) scale(0.98);
+  }
+
+  /* Soft outline button / pill hover */
+  .pc-pill-lift {
+    transition: transform 220ms var(--ease-out-expo),
+      box-shadow 220ms var(--ease-out-expo),
+      background-color 200ms ease,
+      border-color 200ms ease,
+      color 200ms ease;
+  }
+  .pc-pill-lift:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px -4px rgba(18, 56, 43, 0.18);
+  }
+  .pc-pill-lift:active:not(:disabled) {
+    transform: translateY(0) scale(0.97);
+  }
+
+  /* Admin card hover */
+  .pc-admin-card {
+    transition: transform 260ms var(--ease-out-expo),
+      box-shadow 260ms var(--ease-out-expo),
+      border-color 260ms var(--ease-out-expo);
+  }
+  .pc-admin-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 32px rgba(23, 75, 53, 0.12);
+    border-color: #78b093;
+  }
+
+  /* Smooth modal dialog entrance */
+  .pc-modal-pop {
+    animation: pcModalPop 240ms var(--ease-out-expo) both;
+  }
+
+  /* Gentle ambient float for hero badges */
+  .pc-float-slow {
+    animation: pcFloat 5.5s ease-in-out infinite;
+  }
+  .pc-float-delayed {
+    animation: pcFloat 6.2s ease-in-out 1.4s infinite;
+  }
+}
+
+@keyframes pcModalPop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes pcFloat {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@keyframes gradientFlow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.animate-gradient-flow {
+  background-size: 200% 200%;
+  animation: gradientFlow 8s ease infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

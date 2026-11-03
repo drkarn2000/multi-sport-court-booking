@@ -1,0 +1,392 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                  String                  @id @default(uuid())
+  phone               String                  @unique
+  email               String?                 @unique
+  fullName            String
+  role                String                  @default("PLAYER") // PLAYER | PLATFORM_ADMIN | VENUE_MANAGER | FINANCE_OPERATOR
+  status              String                  @default("ACTIVE") // ACTIVE | SUSPENDED | PENDING_INVITE
+  lastActiveAt        DateTime                @default(now())
+  createdAt           DateTime                @default(now())
+  updatedAt           DateTime                @updatedAt
+
+  profile             PlayerProfile?
+  sessions            UserSession[]
+  favouriteVenues     PlayerFavouriteVenue[]
+  ownedGroups         MembershipGroup[]       @relation("GroupOwner")
+  groupMembership     MembershipGroupMember?
+  redeemedCredits     DailyCreditLedger[]
+  bookings            Booking[]
+  cancellationReqs    BookingCancellation[]   @relation("RequestedBy")
+  reviewedCancels     BookingCancellation[]   @relation("ReviewedBy")
+  payments            Payment[]
+  hostedMatches       OpenMatch[]
+  matchParticipations OpenMatchParticipant[]
+  eventRegistrations  EventRegistration[]
+  auditLogs           AdminAuditLog[]
+}
+
+model OtpVerification {
+  id          String    @id @default(uuid())
+  phone       String
+  otpHash     String
+  attempts    Int       @default(0)
+  maxAttempts Int       @default(5)
+  expiresAt   DateTime
+  consumedAt  DateTime?
+  requestIp   String?
+  createdAt   DateTime  @default(now())
+
+  @@index([phone, expiresAt])
+}
+
+model UserSession {
+  id        String    @id @default(uuid())
+  userId    String
+  tokenHash String    @unique
+  userAgent String?
+  ipAddress String?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PlayerProfile {
+  userId          String   @id
+  city            String   @default("Chandigarh")
+  memberSince     String   @default("March 2025")
+  preferredSports String   @default("[\"Tennis\",\"Padel\"]") // JSON array of SportType
+  skillLevels     String   @default("{\"Tennis\":\"Intermediate\",\"Padel\":\"Intermediate\",\"Badminton\":\"Beginner\",\"Squash\":\"Beginner\"}")
+  matchesPlayed   Int      @default(42)
+  hoursOnCourt    Float    @default(68)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PlayerFavouriteVenue {
+  userId    String
+  venueId   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue     Venue    @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@id([userId, venueId])
+}
+
+model MembershipPlan {
+  id                 String            @id
+  name               String
+  badge              String
+  priceInr           Int
+  cycle              String            // "month" | "year"
+  featured           Boolean           @default(false)
+  maxLinkedMembers   Int               @default(4)
+  sharedDailyCredits Int               @default(1)
+  description        String
+  featuresJson       String            // JSON string[]
+  isActive           Boolean           @default(true)
+
+  groups             MembershipGroup[]
+}
+
+model MembershipGroup {
+  id               String                  @id @default(uuid())
+  code             String                  @unique // e.g. GRP-ATLAS-01
+  name             String
+  planId           String
+  ownerUserId      String
+  status           String                  @default("Active") // Active | Payment Overdue | Inactive
+  creditLocked     Boolean                 @default(false)
+  maxMembers       Int                     @default(4)
+  dailyCreditQuota Int                     @default(1)
+  renewalDateLabel String                  @default("12 Nov 2026")
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  plan             MembershipPlan          @relation(fields: [planId], references: [id])
+  owner            User                    @relation("GroupOwner", fields: [ownerUserId], references: [id])
+  members          MembershipGroupMember[]
+  creditLedgers    DailyCreditLedger[]
+  bookings         Booking[]
+}
+
+model MembershipGroupMember {
+  id         String          @id @default(uuid())
+  groupId    String
+  userId     String          @unique
+  role       String          @default("Linked Crew") // "Primary Holder" | "Linked Crew"
+  slotNumber Int             // 1, 2, 3, or 4 (enforces max 4 members per group)
+  avatar     String
+  linkedAt   DateTime        @default(now())
+
+  group      MembershipGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user       User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@unique([groupId, slotNumber])
+}
+
+model DailyCreditLedger {
+  id               String          @id @default(uuid())
+  groupId          String
+  creditDate       String          // YYYY-MM-DD in Asia/Kolkata
+  // creditLockKey is "${groupId}:${creditDate}" when status == "REDEEMED", or null when "RESTORED"
+  // Enforces at the database level that a group can NEVER have two active redemptions on the same date!
+  creditLockKey    String?         @unique
+  redeemedByUserId String
+  redeemedByName   String
+  bookingId        String?         @unique
+  venueId          String
+  venueName        String
+  timeSlot         String
+  status           String          @default("REDEEMED") // REDEEMED | RESTORED
+  redeemedAt       DateTime        @default(now())
+  restoredAt       DateTime?
+
+  group            MembershipGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  redeemedBy       User            @relation(fields: [redeemedByUserId], references: [id])
+}
+
+model Venue {
+  id                     String                 @id
+  slug                   String                 @unique
+  name                   String
+  area                   String
+  city                   String
+  address                String
+  sportsJson             String                 // JSON SportType[]
+  primarySport           String
+  rating                 Float                  @default(4.8)
+  reviewCount            Int                    @default(100)
+  pricePerHour           Int
+  tag                    String
+  image                  String
+  galleryJson            String                 // JSON string[]
+  description            String
+  openingHours           String
+  facilitiesJson         String                 // JSON string[]
+  participatingInCredits Boolean                @default(true)
+  operationalStatus      String                 @default("Open") // Open | Maintenance | Closed
+  occupancyPct           Int                    @default(85)
+  createdAt              DateTime               @default(now())
+  updatedAt              DateTime               @updatedAt
+
+  courts                 Court[]
+  bookings               Booking[]
+  matches                OpenMatch[]
+  events                 PlayEventRecord[]
+  favouritedBy           PlayerFavouriteVenue[]
+}
+
+model Court {
+  id                String                  @id
+  venueId           String
+  name              String
+  sport             String
+  surface           String
+  indoor            Boolean                 @default(false)
+  pricePerHour      Int
+  slotsTemplateJson String                  // JSON array of { time, available, peak }
+  isActive          Boolean                 @default(true)
+
+  venue             Venue                   @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  bookings          Booking[]
+  maintenanceBlocks CourtMaintenanceBlock[]
+}
+
+model CourtMaintenanceBlock {
+  id              String   @id @default(uuid())
+  courtId         String
+  blockDate       String   // YYYY-MM-DD
+  timeSlot        String   // e.g. "14:00–15:00"
+  reason          String
+  createdByUserId String?
+  createdAt       DateTime @default(now())
+
+  court           Court    @relation(fields: [courtId], references: [id], onDelete: Cascade)
+
+  @@unique([courtId, blockDate, timeSlot])
+}
+
+model Booking {
+  id              String               @id @default(uuid())
+  bookingCode     String               @unique // e.g. PC-10482
+  userId          String
+  venueId         String
+  courtId         String
+  date            String               // YYYY-MM-DD
+  timeSlot        String               // e.g. "18:00–19:00"
+  // activeSlotKey is "${courtId}:${date}:${timeSlot}" while booking is active (Confirmed/Upcoming/Pending/Cancellation Requested)
+  // and null if Cancelled/Failed. Enforces zero double-booking at the database level!
+  activeSlotKey   String?              @unique
+  durationMinutes Int                  @default(60)
+  playerName      String
+  playerEmail     String
+  playerPhone     String
+  totalPrice      Int
+  paidWithCredit  Boolean              @default(false)
+  groupId         String?
+  status          String               @default("Confirmed") // Confirmed | Upcoming | Completed | Cancellation Requested | Cancelled | Pending | Failed
+  notes           String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  user            User                 @relation(fields: [userId], references: [id])
+  venue           Venue                @relation(fields: [venueId], references: [id])
+  court           Court                @relation(fields: [courtId], references: [id])
+  group           MembershipGroup?     @relation(fields: [groupId], references: [id])
+  cancellation    BookingCancellation?
+  payments        Payment[]
+}
+
+model BookingCancellation {
+  id                String    @id @default(uuid())
+  bookingId         String    @unique
+  requestedByUserId String
+  reason            String
+  reviewStatus      String    @default("PENDING") // PENDING | APPROVED | REJECTED
+  reviewedByAdminId String?
+  creditRestored    Boolean   @default(false)
+  requestedAt       DateTime  @default(now())
+  reviewedAt        DateTime?
+
+  booking           Booking   @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  requestedBy       User      @relation("RequestedBy", fields: [requestedByUserId], references: [id])
+  reviewedBy        User?     @relation("ReviewedBy", fields: [reviewedByAdminId], references: [id])
+}
+
+model Payment {
+  id             String   @id @default(uuid())
+  txCode         String   @unique // e.g. TX-93821
+  userId         String
+  customerName   String
+  bookingId      String?
+  purpose        String   // Court booking | Subscription renewal | Event ticket
+  amountInr      Int
+  status         String   @default("Paid") // Paid | Pending | Failed | Refunded
+  idempotencyKey String   @unique
+  dateLabel      String
+  createdAt      DateTime @default(now())
+
+  user           User     @relation(fields: [userId], references: [id])
+  booking        Booking? @relation(fields: [bookingId], references: [id])
+}
+
+model OpenMatch {
+  id             String                 @id
+  venueId        String
+  hostUserId     String
+  hostName       String
+  hostRating     Float                  @default(4.8)
+  title          String
+  sport          String
+  skillLevel     String
+  area           String
+  dateTime       String
+  totalSpots     Int                    @default(4)
+  filledSpots    Int                    @default(1)
+  pricePerPlayer Int                    @default(250)
+  description    String
+  status         String                 @default("Open") // Open | Almost full | Full
+  createdAt      DateTime               @default(now())
+
+  venue          Venue                  @relation(fields: [venueId], references: [id])
+  host           User                   @relation(fields: [hostUserId], references: [id])
+  participants   OpenMatchParticipant[]
+}
+
+model OpenMatchParticipant {
+  matchId  String
+  userId   String
+  joinedAt DateTime  @default(now())
+
+  match    OpenMatch @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([matchId, userId])
+}
+
+model PlayEventRecord {
+  id               String              @id
+  venueId          String
+  venueName        String
+  title            String
+  category         String              // Tournament | Coaching | Social
+  sport            String
+  dateLabel        String
+  fullDate         String
+  time             String
+  price            Int
+  totalSpots       Int
+  spotsLeft        Int
+  image            String
+  description      String
+  highlightsJson   String              // JSON string[]
+  coachOrOrganizer String
+  publishStatus    String              @default("Published") // Published | Draft
+  createdAt        DateTime            @default(now())
+
+  venue            Venue               @relation(fields: [venueId], references: [id])
+  registrations    EventRegistration[]
+}
+
+model EventRegistration {
+  id           String          @id @default(uuid())
+  eventId      String
+  userId       String
+  partnerName  String?
+  registeredAt DateTime        @default(now())
+
+  event        PlayEventRecord @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  user         User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, userId])
+}
+
+model ShopOrder {
+  id               String   @id @default(uuid())
+  orderCode        String   @unique // e.g. ORD-2018
+  customerName     String
+  itemsSummary     String
+  totalInr         Int
+  fulfilmentStatus String   @default("Processing") // Ready for pickup | Processing | Completed
+  createdAt        DateTime @default(now())
+}
+
+model PromotionOffer {
+  id                String   @id @default(uuid())
+  code              String   @unique // e.g. WELCOME10
+  details           String
+  offerType         String   // Voucher | Partner benefit | Campaign
+  status            String   @default("Active") // Active | Scheduled
+  redemptionSummary String
+  createdAt         DateTime @default(now())
+}
+
+model AdminAuditLog {
+  id           String   @id @default(uuid())
+  actorUserId  String
+  actorName    String
+  actorRole    String
+  action       String
+  targetEntity String
+  targetId     String
+  summary      String
+  createdAt    DateTime @default(now())
+
+  actor        User     @relation(fields: [actorUserId], references: [id])
+}
+

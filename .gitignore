@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Next.js build output
+.next/
+out/
+
+# Local SQLite databases & WAL/SHM journals (never commit local data)
+prisma/*.db
+prisma/*.db-wal
+prisma/*.db-shm
+prisma/*.sqlite
+prisma/*.sqlite-*
+*.db
+*.db-wal
+*.db-shm
+
+# Environment secrets & local overrides
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# TypeScript & test artifacts
+*.tsbuildinfo
+playwright-report/
+test-results/
+scratch/
+
+# OS files
+Thumbs.db
+.DS_Store
+
