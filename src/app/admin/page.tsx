@@ -10,6 +10,26 @@ import {
   HelpCircle,
   ArrowLeft,
   Search,
+  Calendar,
+  DollarSign,
+  Users,
+  Activity,
+  Sparkles,
+  CreditCard,
+  Trophy,
+  Zap,
+  ShoppingBag,
+  Tag,
+  FileBarChart,
+  UserCheck,
+  Settings as SettingsIcon,
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Layers,
+  Building2,
+  BarChart3,
+  TrendingUp,
 } from "lucide-react";
 import { usePlayCourt } from "@/context/PlayCourtContext";
 
@@ -28,6 +48,46 @@ type AdminPageKey =
   | "reports"
   | "team"
   | "settings";
+
+const MODULE_ICONS: Record<
+  AdminPageKey,
+  React.ComponentType<{ className?: string }>
+> = {
+  overview: BarChart3,
+  bookings: Calendar,
+  schedule: Clock,
+  venues: Building2,
+  players: Users,
+  memberships: Sparkles,
+  payments: CreditCard,
+  community: Trophy,
+  events: Zap,
+  commerce: ShoppingBag,
+  offers: Tag,
+  reports: FileBarChart,
+  team: UserCheck,
+  settings: SettingsIcon,
+};
+
+const MODULE_COLORS: Record<
+  AdminPageKey,
+  { bg: string; text: string; activeBg: string }
+> = {
+  overview: { bg: "bg-emerald-500/20", text: "text-emerald-400", activeBg: "bg-gradient-to-r from-emerald-600 to-teal-600" },
+  bookings: { bg: "bg-sky-500/20", text: "text-sky-400", activeBg: "bg-gradient-to-r from-sky-600 to-blue-600" },
+  schedule: { bg: "bg-purple-500/20", text: "text-purple-400", activeBg: "bg-gradient-to-r from-purple-600 to-indigo-600" },
+  venues: { bg: "bg-amber-500/20", text: "text-amber-400", activeBg: "bg-gradient-to-r from-amber-600 to-orange-600" },
+  players: { bg: "bg-pink-500/20", text: "text-pink-400", activeBg: "bg-gradient-to-r from-pink-600 to-rose-600" },
+  memberships: { bg: "bg-lime-500/20", text: "text-lime-400", activeBg: "bg-gradient-to-r from-lime-600 to-emerald-600" },
+  payments: { bg: "bg-teal-500/20", text: "text-teal-400", activeBg: "bg-gradient-to-r from-teal-600 to-cyan-600" },
+  community: { bg: "bg-indigo-500/20", text: "text-indigo-400", activeBg: "bg-gradient-to-r from-indigo-600 to-purple-600" },
+  events: { bg: "bg-orange-500/20", text: "text-orange-400", activeBg: "bg-gradient-to-r from-orange-600 to-amber-600" },
+  commerce: { bg: "bg-rose-500/20", text: "text-rose-400", activeBg: "bg-gradient-to-r from-rose-600 to-pink-600" },
+  offers: { bg: "bg-fuchsia-500/20", text: "text-fuchsia-400", activeBg: "bg-gradient-to-r from-fuchsia-600 to-purple-600" },
+  reports: { bg: "bg-blue-500/20", text: "text-blue-400", activeBg: "bg-gradient-to-r from-blue-600 to-indigo-600" },
+  team: { bg: "bg-emerald-500/20", text: "text-emerald-400", activeBg: "bg-gradient-to-r from-emerald-600 to-teal-600" },
+  settings: { bg: "bg-slate-500/20", text: "text-slate-400", activeBg: "bg-gradient-to-r from-slate-600 to-zinc-600" },
+};
 
 const META: Record<AdminPageKey, [string, string, string]> = {
   overview: [
@@ -511,6 +571,7 @@ export default function AdminDashboardPage() {
       "Ready for pickup",
       "Pending invite",
       "1/1 credit used today",
+      "3 alerts",
     ].includes(s);
     const isDanger = [
       "Failed",
@@ -522,18 +583,27 @@ export default function AdminDashboardPage() {
     const isNeutral = ["Draft", "Refunded"].includes(s);
 
     const cls = isWarn
-      ? "bg-[#fff2d6] text-[#97630a]"
+      ? "bg-gradient-to-r from-amber-100 to-orange-100 text-amber-900 border border-amber-300 shadow-sm"
       : isDanger
-      ? "bg-[#fdeaea] text-[#ad3d40]"
+      ? "bg-gradient-to-r from-rose-100 to-red-100 text-rose-900 border border-rose-300 shadow-sm"
       : isNeutral
-      ? "bg-[#edf0ee] text-[#65736a]"
-      : "bg-[#e8f5ed] text-[#28714d]";
+      ? "bg-gradient-to-r from-slate-100 to-zinc-100 text-slate-700 border border-slate-300 shadow-sm"
+      : "bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-900 border border-emerald-300 shadow-sm";
+
+    const dotCls = isWarn
+      ? "bg-amber-500 animate-pulse"
+      : isDanger
+      ? "bg-rose-500"
+      : isNeutral
+      ? "bg-slate-400"
+      : "bg-emerald-500 animate-pulse";
 
     return (
       <span
-        className={`inline-block rounded-full px-2.5 py-1 text-[10px] font-extrabold transition-transform duration-150 hover:scale-105 cursor-default ${cls}`}
+        className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10.5px] font-extrabold transition-all duration-200 hover:scale-105 hover:shadow-sm cursor-default ${cls}`}
       >
-        {s}
+        <span className={`w-1.5 h-1.5 rounded-full ${dotCls}`} />
+        <span>{s}</span>
       </span>
     );
   };
@@ -718,26 +788,29 @@ export default function AdminDashboardPage() {
   }, [adminData, page, query, statusFilter, contextBookings]);
 
   return (
-    <div className="min-h-screen bg-[#f5f7f5] text-[#18251f] text-[14px]">
+    <div className="min-h-screen bg-[#f8faf9] text-[#18251f] text-[14px]">
       {/* FIXED LEFT SIDEBAR */}
       <aside
-        className={`fixed inset-y-0 left-0 w-[250px] bg-[#12251d] text-white p-5 overflow-y-auto z-40 transition-transform duration-200 ${
+        className={`fixed inset-y-0 left-0 w-[265px] bg-gradient-to-b from-[#0f291f] via-[#122b21] to-[#0c1f17] text-white p-5 overflow-y-auto z-40 transition-transform duration-200 border-r border-emerald-900/50 shadow-2xl ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="pb-5 mb-2 border-b border-white/15 flex items-center justify-between">
+        <div className="pb-5 mb-3 border-b border-white/15 flex items-center justify-between">
           <div>
-            <div className="text-[19px] font-extrabold tracking-tight flex items-center gap-2">
-              <span className="text-pc-lime">◈</span> playcourt
+            <div className="text-[20px] font-black tracking-tight flex items-center gap-2">
+              <span className="w-7 h-7 rounded-lg bg-pc-lime text-pc-deep grid place-items-center text-sm font-black shadow-md">
+                P
+              </span>
+              <span>playcourt</span>
             </div>
-            <span className="block text-[10px] tracking-[1.5px] text-[#a7b9ae] font-semibold mt-0.5">
+            <span className="inline-block text-[10px] tracking-[1.6px] text-pc-lime/90 font-extrabold mt-1 uppercase">
               OPERATIONS CONSOLE
             </span>
           </div>
           <button
             type="button"
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-white/70 hover:text-white"
+            className="lg:hidden p-1.5 rounded-lg bg-white/10 text-white/70 hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -745,122 +818,173 @@ export default function AdminDashboardPage() {
 
         <Link
           href="/"
-          className="group mt-3 mb-2 flex items-center gap-2 px-3 py-2 rounded-lg bg-white/10 text-pc-lime text-[11.5px] font-bold hover:bg-white/20 hover:translate-x-0.5 transition-all"
+          className="group mt-2 mb-4 flex items-center gap-2 px-3 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500/20 to-teal-500/20 border border-emerald-500/30 text-pc-lime text-[12px] font-black hover:from-emerald-500/30 hover:to-teal-500/30 hover:scale-[1.02] transition-all shadow-sm"
         >
-          <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           <span>Back to Customer App</span>
         </Link>
 
-        <div className="text-[10px] tracking-[1.4px] text-[#82988b] pt-4 pb-2 px-3 font-extrabold">
+        <div className="text-[10.5px] tracking-[1.4px] text-emerald-400/80 pt-3 pb-2 px-3 font-black uppercase">
           WORKSPACE
         </div>
-        <nav className="grid gap-1">
+        <nav className="grid gap-1.5">
           {(
             [
-              ["overview", "▦  Overview"],
-              ["bookings", `▣  Bookings`],
-              ["schedule", "▦  Court schedule"],
-              ["venues", "⌂  Venues & courts"],
-              ["players", "♙  Players"],
-              ["memberships", "♧  Memberships"],
+              ["overview", "Overview"],
+              ["bookings", "Bookings"],
+              ["schedule", "Court schedule"],
+              ["venues", "Venues & courts"],
+              ["players", "Players"],
+              ["memberships", "Memberships"],
             ] as [AdminPageKey, string][]
-          ).map(([key, text]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => navigateModule(key)}
-              className={`px-3 py-2.5 rounded-lg text-left text-[13px] transition-all duration-200 flex items-center justify-between ${
-                page === key
-                  ? "bg-[#d9f0e2] text-[#174b35] font-extrabold shadow-sm hover:bg-[#e7f7ee] hover:translate-x-0.5"
-                  : "text-[#b5c4bb] hover:bg-white/10 hover:text-white hover:translate-x-1"
-              }`}
-            >
-              <span>{text}</span>
-              {key === "bookings" && (
-                <span className="text-[11px] font-bold opacity-80">
-                  {adminData.bookings.length}
-                </span>
-              )}
-            </button>
-          ))}
+          ).map(([key, text]) => {
+            const IconComp = MODULE_ICONS[key] || Activity;
+            const col = MODULE_COLORS[key];
+            const isAct = page === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => navigateModule(key)}
+                className={`group px-3 py-2 rounded-xl text-left text-[13px] transition-all duration-200 flex items-center justify-between ${
+                  isAct
+                    ? `${col.activeBg} text-white font-black shadow-md shadow-emerald-950/40 translate-x-1`
+                    : "text-[#c2d4ca] hover:bg-white/10 hover:text-white hover:translate-x-1"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className={`w-7 h-7 rounded-lg grid place-items-center transition-transform duration-200 group-hover:scale-110 ${
+                      isAct ? "bg-white/20 text-white" : `${col.bg} ${col.text}`
+                    }`}
+                  >
+                    <IconComp className="w-4 h-4" />
+                  </span>
+                  <span className="font-bold">{text}</span>
+                </div>
+                {key === "bookings" && (
+                  <span
+                    className={`text-[11px] font-extrabold px-2 py-0.5 rounded-full ${
+                      isAct
+                        ? "bg-white text-emerald-900"
+                        : "bg-emerald-500/20 text-emerald-300"
+                    }`}
+                  >
+                    {adminData.bookings.length}
+                  </span>
+                )}
+              </button>
+            );
+          })}
 
-          <div className="text-[10px] tracking-[1.4px] text-[#82988b] pt-5 pb-2 px-3 font-extrabold">
-            REVENUE
+          <div className="text-[10.5px] tracking-[1.4px] text-sky-400/80 pt-4 pb-2 px-3 font-black uppercase">
+            REVENUE & MATCHES
           </div>
           {(
             [
-              ["payments", "▤  Payments"],
-              ["community", "◎  Community & matches"],
-              ["events", "✳  Events & coaching"],
-              ["commerce", "▱  Shop & orders"],
-              ["offers", "◇  Offers & vouchers"],
+              ["payments", "Payments"],
+              ["community", "Community & matches"],
+              ["events", "Events & coaching"],
+              ["commerce", "Shop & orders"],
+              ["offers", "Offers & vouchers"],
             ] as [AdminPageKey, string][]
-          ).map(([key, text]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => navigateModule(key)}
-              className={`px-3 py-2.5 rounded-lg text-left text-[13px] transition-all duration-200 ${
-                page === key
-                  ? "bg-[#d9f0e2] text-[#174b35] font-extrabold shadow-sm hover:bg-[#e7f7ee] hover:translate-x-0.5"
-                  : "text-[#b5c4bb] hover:bg-white/10 hover:text-white hover:translate-x-1"
-              }`}
-            >
-              {text}
-            </button>
-          ))}
+          ).map(([key, text]) => {
+            const IconComp = MODULE_ICONS[key] || Activity;
+            const col = MODULE_COLORS[key];
+            const isAct = page === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => navigateModule(key)}
+                className={`group px-3 py-2 rounded-xl text-left text-[13px] transition-all duration-200 flex items-center justify-between ${
+                  isAct
+                    ? `${col.activeBg} text-white font-black shadow-md shadow-emerald-950/40 translate-x-1`
+                    : "text-[#c2d4ca] hover:bg-white/10 hover:text-white hover:translate-x-1"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className={`w-7 h-7 rounded-lg grid place-items-center transition-transform duration-200 group-hover:scale-110 ${
+                      isAct ? "bg-white/20 text-white" : `${col.bg} ${col.text}`
+                    }`}
+                  >
+                    <IconComp className="w-4 h-4" />
+                  </span>
+                  <span className="font-bold">{text}</span>
+                </div>
+              </button>
+            );
+          })}
 
-          <div className="text-[10px] tracking-[1.4px] text-[#82988b] pt-5 pb-2 px-3 font-extrabold">
+          <div className="text-[10.5px] tracking-[1.4px] text-purple-400/80 pt-4 pb-2 px-3 font-black uppercase">
             INSIGHTS & CONTROL
           </div>
           {(
             [
-              ["reports", "▥  Reports"],
-              ["team", "♧  Staff & permissions"],
-              ["settings", "⚙  Settings & audit log"],
+              ["reports", "Reports & Analytics"],
+              ["team", "Staff & permissions"],
+              ["settings", "Settings & audit log"],
             ] as [AdminPageKey, string][]
-          ).map(([key, text]) => (
-            <button
-              key={key}
-              type="button"
-              onClick={() => navigateModule(key)}
-              className={`px-3 py-2.5 rounded-lg text-left text-[13px] transition-all duration-200 ${
-                page === key
-                  ? "bg-[#d9f0e2] text-[#174b35] font-extrabold shadow-sm hover:bg-[#e7f7ee] hover:translate-x-0.5"
-                  : "text-[#b5c4bb] hover:bg-white/10 hover:text-white hover:translate-x-1"
-              }`}
-            >
-              {text}
-            </button>
-          ))}
+          ).map(([key, text]) => {
+            const IconComp = MODULE_ICONS[key] || Activity;
+            const col = MODULE_COLORS[key];
+            const isAct = page === key;
+            return (
+              <button
+                key={key}
+                type="button"
+                onClick={() => navigateModule(key)}
+                className={`group px-3 py-2 rounded-xl text-left text-[13px] transition-all duration-200 flex items-center justify-between ${
+                  isAct
+                    ? `${col.activeBg} text-white font-black shadow-md shadow-emerald-950/40 translate-x-1`
+                    : "text-[#c2d4ca] hover:bg-white/10 hover:text-white hover:translate-x-1"
+                }`}
+              >
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className={`w-7 h-7 rounded-lg grid place-items-center transition-transform duration-200 group-hover:scale-110 ${
+                      isAct ? "bg-white/20 text-white" : `${col.bg} ${col.text}`
+                    }`}
+                  >
+                    <IconComp className="w-4 h-4" />
+                  </span>
+                  <span className="font-bold">{text}</span>
+                </div>
+              </button>
+            );
+          })}
         </nav>
       </aside>
 
       {/* MAIN WORKSPACE */}
-      <div className="lg:ml-[250px]">
+      <div className="lg:ml-[265px]">
         {/* Sticky Top Bar */}
-        <header className="h-[70px] flex items-center justify-between px-4 sm:px-8 bg-white border-b border-[#e3eae5] sticky top-0 z-30">
+        <header className="h-[72px] flex items-center justify-between px-4 sm:px-8 bg-white/95 backdrop-blur-md border-b border-emerald-100 shadow-sm sticky top-0 z-30">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg border border-[#e3eae5] bg-white"
+              className="lg:hidden p-2 rounded-xl border border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 transition-colors"
             >
               <Menu className="w-4 h-4" />
             </button>
             <div>
-              <small className="text-[#718078] text-[11.5px]">
-                PlayCourt / <span>{label}</span>
-              </small>
-              <div className="font-extrabold text-[15px]">{title}</div>
+              <div className="flex items-center gap-1.5 text-[#5f7569] text-[11px] font-bold">
+                <span className="text-emerald-700 font-extrabold">PlayCourt</span>
+                <span>/</span>
+                <span className="bg-emerald-100 text-emerald-900 px-2 py-0.5 rounded-full font-extrabold">{label}</span>
+              </div>
+              <div className="font-black text-[17px] text-[#11241a] tracking-tight">{title}</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <span className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#fff2d6] text-[#97630a] text-[11px] font-extrabold border border-[#f2dcab]">
+          <div className="flex items-center gap-2.5">
+            <span className="hidden md:inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-amber-100 via-orange-100 to-amber-100 text-amber-950 text-[11px] font-black border border-amber-300 shadow-sm">
+              <span className="w-2 h-2 rounded-full bg-amber-500 animate-ping" />
               {adminUser
-                ? `DEMO INTERFACE · RBAC Active (${adminUser.fullName} · ${adminUser.role})`
-                : "DEMO INTERFACE · Unauthenticated Frontend Preview"}
+                ? `RBAC Active: ${adminUser.fullName} (${adminUser.role})`
+                : "Interactive Operations Preview"}
             </span>
             {localDevMode && (
               <select
@@ -885,7 +1009,7 @@ export default function AdminDashboardPage() {
                     setAdminUser(null);
                   }
                 }}
-                className="hidden sm:inline-block px-2.5 py-1.5 rounded-lg border border-[#176b4d] bg-[#eef7f2] text-[#174b35] text-[11.5px] font-extrabold"
+                className="hidden sm:inline-block px-3 py-1.5 rounded-xl border-2 border-emerald-400 bg-emerald-50 text-emerald-950 text-[11.5px] font-black hover:bg-emerald-100 transition-colors shadow-sm cursor-pointer"
               >
                 <option value="NONE">Switch Staff Role (Local Dev)…</option>
                 <option value="PLATFORM_ADMIN">
@@ -905,9 +1029,10 @@ export default function AdminDashboardPage() {
             )}
             <Link
               href="/"
-              className="pc-pill-lift hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#e3eae5] hover:border-[#176b4d] bg-white text-[12px] font-bold text-[#24382d] hover:bg-[#f5f7f5]"
+              className="pc-pill-lift hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-emerald-300 bg-gradient-to-r from-emerald-50 to-teal-50 text-[12px] font-extrabold text-emerald-900 hover:from-emerald-100 hover:to-teal-100 shadow-sm hover:shadow hover:-translate-y-0.5 transition-all"
             >
-              Customer Storefront ↗
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Customer App ↗</span>
             </Link>
             <button
               type="button"
@@ -915,9 +1040,9 @@ export default function AdminDashboardPage() {
                 setModalTitle("Help & support");
                 setModalType("help");
               }}
-              className="pc-pill-lift inline-flex items-center gap-1.5 px-3 py-2 rounded-lg border border-[#e3eae5] hover:border-[#176b4d] bg-white text-[12px] font-bold text-[#24382d] hover:bg-[#f5f7f5]"
+              className="pc-pill-lift inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-sky-300 bg-gradient-to-r from-sky-50 to-indigo-50 text-[12px] font-extrabold text-sky-900 hover:from-sky-100 hover:to-indigo-100 shadow-sm hover:shadow hover:-translate-y-0.5 transition-all"
             >
-              <HelpCircle className="w-3.5 h-3.5 text-[#176b4d]" />
+              <HelpCircle className="w-4 h-4 text-sky-600" />
               <span>Help & support</span>
             </button>
           </div>
@@ -977,14 +1102,15 @@ export default function AdminDashboardPage() {
             <>
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                 <div>
-                  <div className="text-[#176b4d] text-[10px] tracking-[1.5px] font-extrabold uppercase">
-                    PLAYCOURT / OPERATIONS
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10.5px] font-black tracking-wider uppercase mb-1 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    LIVE OPERATIONS DASHBOARD
                   </div>
-                  <h1 className="text-[26px] font-extrabold tracking-[-0.7px] my-1">
+                  <h1 className="text-[28px] font-black tracking-[-0.8px] text-[#0f281e] my-1">
                     Good evening, team 👋
                   </h1>
-                  <div className="text-[#718078]">
-                    Here’s what’s happening across your venues today.
+                  <div className="text-[#556b60] text-[13.5px] font-medium">
+                    Here’s real-time court activity, revenue &amp; player reservations today.
                   </div>
                 </div>
                 <button
@@ -993,71 +1119,129 @@ export default function AdminDashboardPage() {
                     setModalTitle("Create booking");
                     setModalType("createBooking");
                   }}
-                  className="group pc-btn-lift inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-[#176b4d] hover:bg-[#12543c] text-white font-bold text-[13px]"
+                  className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-[13px] shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200"
                 >
                   <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform duration-300" />
                   <span>Create booking</span>
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-5">
-                {[
-                  ["Today's bookings", "128", "↑ 12.8% vs last Saturday"],
-                  ["Gross revenue", "₹1,84,650", "↑ 8.4% this week"],
-                  ["Court occupancy", "78.4%", "19 active courts"],
-                  [
-                    "Active memberships",
-                    "1,246",
-                    `${groupMembership.groupName} (${groupMembership.members.length}/4) active`,
-                  ],
-                ].map(([k, val, sub]) => (
-                  <div
-                    key={k}
-                    className="group pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] p-4 shadow-admin cursor-default"
-                  >
-                    <small className="text-[#718078]">{k}</small>
-                    <div className="text-[25px] font-extrabold my-2 group-hover:text-[#176b4d] transition-colors">
-                      {val}
-                    </div>
-                    <div className="text-[#176b4d] text-[11px] font-bold">
-                      {sub}
-                    </div>
+              {/* 4 Colorful Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                {/* 1. Today's Bookings */}
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#ecfdf5] via-[#f0fdf4] to-[#d1fae5]/60 border border-emerald-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-emerald-800 uppercase tracking-wider">Today's bookings</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white grid place-items-center shadow-md shadow-emerald-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Calendar className="w-5 h-5" />
+                    </span>
                   </div>
-                ))}
+                  <div className="text-[32px] font-black tracking-tight text-emerald-950 my-1 group-hover:text-emerald-700 transition-colors">
+                    128
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 text-[11.5px] font-extrabold text-emerald-800 bg-emerald-200/70 px-2.5 py-0.5 rounded-full mt-1">
+                    <span>↑ 12.8%</span>
+                    <span className="font-medium opacity-80">vs last Saturday</span>
+                  </div>
+                </div>
+
+                {/* 2. Gross Revenue */}
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#eff6ff] via-[#f0f9ff] to-[#dbeafe]/60 border border-blue-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-blue-800 uppercase tracking-wider">Gross revenue</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 text-white grid place-items-center shadow-md shadow-blue-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <DollarSign className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-blue-950 my-1 group-hover:text-blue-700 transition-colors">
+                    ₹1,84,650
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 text-[11.5px] font-extrabold text-blue-800 bg-blue-200/70 px-2.5 py-0.5 rounded-full mt-1">
+                    <span>↑ 8.4%</span>
+                    <span className="font-medium opacity-80">this week</span>
+                  </div>
+                </div>
+
+                {/* 3. Court Occupancy */}
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#faf5ff] via-[#fdf4ff] to-[#f3e8ff]/60 border border-purple-300 shadow-sm hover:shadow-xl hover:shadow-purple-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-purple-800 uppercase tracking-wider">Court occupancy</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-400 text-white grid place-items-center shadow-md shadow-purple-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Activity className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-purple-950 my-1 group-hover:text-purple-700 transition-colors">
+                    78.4%
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 text-[11.5px] font-extrabold text-purple-800 bg-purple-200/70 px-2.5 py-0.5 rounded-full mt-1">
+                    <span>19 active</span>
+                    <span className="font-medium opacity-80">courts</span>
+                  </div>
+                </div>
+
+                {/* 4. Active Memberships */}
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#fffbeb] via-[#fffdf0] to-[#fef3c7]/60 border border-amber-300 shadow-sm hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-amber-800 uppercase tracking-wider">Active memberships</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white grid place-items-center shadow-md shadow-amber-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Sparkles className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-amber-950 my-1 group-hover:text-amber-700 transition-colors">
+                    1,246
+                  </div>
+                  <div className="inline-flex items-center gap-1.5 text-[11.5px] font-extrabold text-amber-900 bg-amber-200/70 px-2.5 py-0.5 rounded-full mt-1 truncate max-w-full">
+                    <span>{groupMembership.groupName}</span>
+                    <span className="font-medium opacity-80">({groupMembership.members.length}/4 active)</span>
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-[1.3fr_1fr] gap-4 mb-5">
+              <div className="grid grid-cols-1 lg:grid-cols-[1.35fr_1fr] gap-5 mb-6">
                 {/* Bar Chart Card */}
-                <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin">
-                  <div className="p-4 border-b border-[#e3eae5] flex items-center justify-between">
-                    <div>
-                      <h3 className="text-[14px] font-bold m-0">
-                        Revenue performance
-                      </h3>
-                      <small className="text-[#718078]">
-                        Daily gross revenue · Last 7 days
-                      </small>
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                  <div className="p-4.5 bg-gradient-to-r from-emerald-50/80 via-white to-teal-50/50 border-b border-emerald-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-700 grid place-items-center font-bold">
+                        <BarChart3 className="w-4 h-4" />
+                      </span>
+                      <div>
+                        <h3 className="text-[14px] font-black text-slate-800 m-0">
+                          Revenue performance
+                        </h3>
+                        <small className="text-slate-500 font-semibold">
+                          Daily gross revenue · Last 7 days
+                        </small>
+                      </div>
                     </div>
-                    <select className="border border-[#e3eae5] rounded-lg px-2.5 py-1.5 text-[12px] font-bold cursor-pointer">
+                    <select className="border border-emerald-200 bg-white rounded-lg px-2.5 py-1.5 text-[12px] font-bold text-emerald-900 cursor-pointer shadow-sm hover:border-emerald-400">
                       <option>Last 7 days</option>
                       <option>Last 30 days</option>
                     </select>
                   </div>
                   <div className="p-5">
-                    <div className="h-[175px] flex items-end gap-3 border-b border-[#e3eae5] pb-2">
-                      {[48, 62, 43, 76, 58, 88, 70].map((v, i) => (
+                    <div className="h-[185px] flex items-end gap-3.5 border-b border-slate-100 pb-2">
+                      {[
+                        [48, "from-emerald-400 to-teal-600", "text-emerald-700"],
+                        [62, "from-teal-400 to-cyan-600", "text-teal-700"],
+                        [43, "from-sky-400 to-blue-600", "text-sky-700"],
+                        [76, "from-indigo-400 to-purple-600", "text-indigo-700"],
+                        [58, "from-purple-400 to-pink-600", "text-purple-700"],
+                        [88, "from-rose-400 to-orange-500", "text-rose-700"],
+                        [70, "from-amber-400 to-emerald-500", "text-amber-700"],
+                      ].map(([v, grad, txtCol], i) => (
                         <div
                           key={i}
                           className="group/bar flex-1 h-full flex flex-col justify-end items-center gap-1.5 cursor-pointer"
                         >
-                          <span className="opacity-0 group-hover/bar:opacity-100 -translate-y-0.5 text-[10px] font-extrabold text-[#176b4d] transition-all">
+                          <span className={`opacity-0 group-hover/bar:opacity-100 -translate-y-1 text-[11px] font-black transition-all ${txtCol}`}>
                             {v}%
                           </span>
                           <div
                             style={{ height: `${v}%` }}
-                            className="w-3/5 rounded-t-md bg-gradient-to-b from-[#65b78a] to-[#176b4d] group-hover/bar:from-[#7cd3a3] group-hover/bar:to-[#1e8762] group-hover/bar:scale-x-110 transition-all duration-200 origin-bottom shadow-sm"
+                            className={`w-4/5 rounded-t-lg bg-gradient-to-t ${grad} group-hover/bar:scale-x-110 group-hover/bar:brightness-110 transition-all duration-200 origin-bottom shadow-sm`}
                           />
-                          <small className="text-[10px] text-[#718078] group-hover/bar:text-[#174b35] group-hover/bar:font-bold transition-colors">
+                          <small className="text-[11px] font-bold text-slate-500 group-hover/bar:text-slate-800 transition-colors">
                             {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"][i]}
                           </small>
                         </div>
@@ -1067,57 +1251,67 @@ export default function AdminDashboardPage() {
                 </div>
 
                 {/* Alerts Card */}
-                <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin">
-                  <div className="p-4 border-b border-[#e3eae5] flex items-center justify-between">
-                    <h3 className="text-[14px] font-bold m-0">
-                      Needs attention
-                    </h3>
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                  <div className="p-4.5 bg-gradient-to-r from-rose-50/80 via-white to-amber-50/50 border-b border-rose-100 flex items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <span className="w-8 h-8 rounded-lg bg-rose-500/20 text-rose-700 grid place-items-center font-bold">
+                        <AlertCircle className="w-4 h-4" />
+                      </span>
+                      <h3 className="text-[14px] font-black text-slate-800 m-0">
+                        Needs attention
+                      </h3>
+                    </div>
                     {statusBadge("3 alerts")}
                   </div>
-                  <div className="p-4 divide-y divide-[#edf1ee]">
-                    <div className="py-2.5 px-2.5 -mx-2.5 rounded-lg hover:bg-[#f6faf7] transition-colors first:pt-2">
-                      <strong className="text-[12.5px] block">
+                  <div className="p-4 space-y-3">
+                    <div className="p-3.5 rounded-xl bg-gradient-to-r from-rose-50 via-white to-rose-50/30 border border-rose-200 hover:border-rose-400 transition-all hover:shadow-sm">
+                      <strong className="text-[13px] text-rose-950 block font-bold">
                         Payment needs retry
                       </strong>
-                      <p className="text-[11.5px] text-[#718078] my-1">
+                      <p className="text-[11.5px] text-slate-600 my-1 font-medium">
                         TX-93819 · Isha Kapoor · ₹2,499
                       </p>
                       <button
                         type="button"
                         onClick={() => navigateModule("payments")}
-                        className="text-[#176b4d] font-extrabold text-[12px] hover:translate-x-1 transition-transform inline-block"
+                        className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-rose-500 to-red-600 hover:from-rose-600 hover:to-red-700 text-white font-black text-[11.5px] shadow-sm hover:shadow hover:scale-105 transition-all"
                       >
-                        Review payment →
+                        <span>Review payment</span>
+                        <span>→</span>
                       </button>
                     </div>
-                    <div className="py-2.5 px-2.5 -mx-2.5 rounded-lg hover:bg-[#f6faf7] transition-colors">
-                      <strong className="text-[12.5px] block">
+
+                    <div className="p-3.5 rounded-xl bg-gradient-to-r from-amber-50 via-white to-amber-50/30 border border-amber-200 hover:border-amber-400 transition-all hover:shadow-sm">
+                      <strong className="text-[13px] text-amber-950 block font-bold">
                         Court maintenance block
                       </strong>
-                      <p className="text-[11.5px] text-[#718078] my-1">
+                      <p className="text-[11.5px] text-slate-600 my-1 font-medium">
                         Central Arena · Court 03 · 14:00–16:00
                       </p>
                       <button
                         type="button"
                         onClick={() => navigateModule("schedule")}
-                        className="text-[#176b4d] font-extrabold text-[12px] hover:translate-x-1 transition-transform inline-block"
+                        className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white font-black text-[11.5px] shadow-sm hover:shadow hover:scale-105 transition-all"
                       >
-                        Open schedule →
+                        <span>Open schedule</span>
+                        <span>→</span>
                       </button>
                     </div>
-                    <div className="py-2.5 px-2.5 -mx-2.5 rounded-lg hover:bg-[#f6faf7] transition-colors last:pb-2">
-                      <strong className="text-[12.5px] block">
+
+                    <div className="p-3.5 rounded-xl bg-gradient-to-r from-indigo-50 via-white to-indigo-50/30 border border-indigo-200 hover:border-indigo-400 transition-all hover:shadow-sm">
+                      <strong className="text-[13px] text-indigo-950 block font-bold">
                         Membership renewal overdue
                       </strong>
-                      <p className="text-[11.5px] text-[#718078] my-1">
-                        Riverside Trio · Shared daily credit temporarily locked
+                      <p className="text-[11.5px] text-slate-600 my-1 font-medium">
+                        Riverside Trio · Shared daily credit locked
                       </p>
                       <button
                         type="button"
                         onClick={() => navigateModule("memberships")}
-                        className="text-[#176b4d] font-extrabold text-[12px] hover:translate-x-1 transition-transform inline-block"
+                        className="mt-1 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-black text-[11.5px] shadow-sm hover:shadow hover:scale-105 transition-all"
                       >
-                        Review membership →
+                        <span>Review membership</span>
+                        <span>→</span>
                       </button>
                     </div>
                   </div>
@@ -1125,21 +1319,27 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Recent Bookings Table */}
-              <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin overflow-hidden">
-                <div className="p-4 border-b border-[#e3eae5] flex items-center justify-between">
-                  <h3 className="text-[14px] font-bold m-0">Recent bookings</h3>
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                <div className="p-4.5 bg-gradient-to-r from-slate-50 via-emerald-50/30 to-slate-50 border-b border-slate-200 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-700 grid place-items-center font-bold">
+                      <Calendar className="w-4 h-4" />
+                    </span>
+                    <h3 className="text-[15px] font-black text-slate-800 m-0">Recent bookings</h3>
+                  </div>
                   <button
                     type="button"
                     onClick={() => navigateModule("bookings")}
-                    className="text-[#176b4d] font-extrabold text-[12px] hover:translate-x-1 transition-transform"
+                    className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-emerald-100 hover:bg-emerald-200 text-emerald-900 font-extrabold text-[12px] border border-emerald-300 transition-all shadow-sm hover:scale-105"
                   >
-                    View all bookings →
+                    <span>View all bookings</span>
+                    <span>→</span>
                   </button>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse whitespace-nowrap">
                     <thead>
-                      <tr className="bg-[#fafbfa] text-[#718078] text-[10px] uppercase tracking-wider border-b border-[#e3eae5]">
+                      <tr className="bg-gradient-to-r from-slate-100 via-emerald-50/40 to-slate-100 text-slate-700 text-[11px] font-black uppercase tracking-wider border-b border-slate-200">
                         {[
                           "Booking",
                           "Player",
@@ -1149,7 +1349,7 @@ export default function AdminDashboardPage() {
                           "Amount",
                           "Status",
                         ].map((h) => (
-                          <th key={h} className="text-left py-3 px-4">
+                          <th key={h} className="text-left py-3.5 px-4.5">
                             {h}
                           </th>
                         ))}
@@ -1159,10 +1359,27 @@ export default function AdminDashboardPage() {
                       {adminData.bookings.slice(0, 4).map((r, idx) => (
                         <tr
                           key={idx}
-                          className="border-b border-[#edf1ee] hover:bg-[#eef7f2] transition-colors text-[12.5px]"
+                          className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-emerald-50/60 hover:to-teal-50/40 transition-colors text-[13px]"
                         >
                           {r.map((v, j) => (
-                            <td key={j} className="py-3 px-4">
+                            <td key={j} className="py-3.5 px-4.5">
+                              {j === 0 ? (
+                                <strong className="text-emerald-950 font-bold">{v}</strong>
+                              ) : isStatusValue(v) ? (
+                                statusBadge(v)
+                              ) : (
+                                <span className="text-slate-700 font-medium">{v}</span>
+                              )}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </>
+          )}
                               {isStatusValue(v) ? statusBadge(v) : v}
                             </td>
                           ))}
@@ -1180,24 +1397,25 @@ export default function AdminDashboardPage() {
             <>
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                 <div>
-                  <div className="text-[#176b4d] text-[10px] tracking-[1.5px] font-extrabold uppercase">
-                    PLAYCOURT / OPERATIONS
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-100 text-purple-900 text-[10.5px] font-black tracking-wider uppercase mb-1 shadow-sm">
+                    <Clock className="w-3.5 h-3.5 text-purple-600" />
+                    COURT SCHEDULE &amp; OCCUPANCY
                   </div>
-                  <h1 className="text-[26px] font-extrabold tracking-[-0.7px] my-1">
+                  <h1 className="text-[28px] font-black tracking-[-0.8px] text-[#0f281e] my-1">
                     Court schedule
                   </h1>
-                  <div className="text-[#718078]">{desc}</div>
+                  <div className="text-[#556b60] text-[13.5px] font-medium">{desc}</div>
                 </div>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-2.5">
                   <button
                     type="button"
                     onClick={() => {
                       setModalTitle("Block court for maintenance");
                       setModalType("blockMaintenance");
                     }}
-                    className="pc-btn-lift px-3.5 py-2.5 rounded-lg bg-[#176b4d] hover:bg-[#12543c] text-white font-bold text-[12.5px]"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-black text-[12.5px] shadow-md shadow-amber-500/25 hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
                   >
-                    ＋ Block maintenance
+                    <span>＋ Block maintenance</span>
                   </button>
                   <button
                     type="button"
@@ -1205,49 +1423,95 @@ export default function AdminDashboardPage() {
                       setModalTitle("Create booking");
                       setModalType("createBooking");
                     }}
-                    className="pc-pill-lift px-3.5 py-2.5 rounded-lg border border-[#e3eae5] hover:border-[#176b4d] bg-white font-bold text-[12.5px]"
+                    className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-[12.5px] shadow-md shadow-emerald-500/25 hover:shadow-lg hover:scale-105 active:scale-95 transition-all"
                   >
-                    ＋ Manual booking
+                    <span>＋ Manual booking</span>
                   </button>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-5">
-                {[
-                  ["Available now", "7 courts", "Across all venues"],
-                  ["Booked today", "78.4%", "Occupancy rate"],
-                  ["Maintenance blocks", "2", "Today"],
-                  ["Conflicts", "0", "No unresolved conflicts"],
-                ].map(([k, val, sub]) => (
-                  <div
-                    key={k}
-                    className="group pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] p-4 shadow-admin cursor-default"
-                  >
-                    <small className="text-[#718078]">{k}</small>
-                    <div className="text-[25px] font-extrabold my-2 group-hover:text-[#176b4d] transition-colors">
-                      {val}
-                    </div>
-                    <div className="text-[#176b4d] text-[11px] font-bold">
-                      {sub}
-                    </div>
+              {/* 4 Colorful Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#ecfdf5] via-[#f0fdf4] to-[#d1fae5]/60 border border-emerald-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-emerald-800 uppercase tracking-wider">Available now</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white grid place-items-center shadow-md shadow-emerald-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <CheckCircle2 className="w-5 h-5" />
+                    </span>
                   </div>
-                ))}
+                  <div className="text-[32px] font-black tracking-tight text-emerald-950 my-1 group-hover:text-emerald-700 transition-colors">
+                    7 courts
+                  </div>
+                  <div className="text-emerald-800 text-[11.5px] font-bold">
+                    Across all venues
+                  </div>
+                </div>
+
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#eff6ff] via-[#f0f9ff] to-[#dbeafe]/60 border border-blue-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-blue-800 uppercase tracking-wider">Booked today</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 text-white grid place-items-center shadow-md shadow-blue-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Activity className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-blue-950 my-1 group-hover:text-blue-700 transition-colors">
+                    78.4%
+                  </div>
+                  <div className="text-blue-800 text-[11.5px] font-bold">
+                    Occupancy rate
+                  </div>
+                </div>
+
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#fffbeb] via-[#fffdf0] to-[#fef3c7]/60 border border-amber-300 shadow-sm hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-amber-800 uppercase tracking-wider">Maintenance blocks</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white grid place-items-center shadow-md shadow-amber-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Clock className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-amber-950 my-1 group-hover:text-amber-700 transition-colors">
+                    2
+                  </div>
+                  <div className="text-amber-800 text-[11.5px] font-bold">
+                    Active today
+                  </div>
+                </div>
+
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#faf5ff] via-[#fdf4ff] to-[#f3e8ff]/60 border border-purple-300 shadow-sm hover:shadow-xl hover:shadow-purple-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-purple-800 uppercase tracking-wider">Conflicts</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-400 text-white grid place-items-center shadow-md shadow-purple-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <ShieldCheck className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-purple-950 my-1 group-hover:text-purple-700 transition-colors">
+                    0
+                  </div>
+                  <div className="text-purple-800 text-[11.5px] font-bold">
+                    All clear
+                  </div>
+                </div>
               </div>
 
-              <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin overflow-hidden">
-                <div className="p-4 border-b border-[#e3eae5] flex items-center justify-between">
-                  <h3 className="text-[14px] font-bold m-0">
-                    Wednesday, 28 October 2026
-                  </h3>
-                  <small className="text-[#718078]">
-                    Select any time cell to inspect or book
-                  </small>
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                <div className="p-4.5 bg-gradient-to-r from-purple-50/80 via-white to-indigo-50/40 border-b border-purple-100 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="w-8 h-8 rounded-lg bg-purple-500/20 text-purple-700 grid place-items-center font-bold">
+                      <Clock className="w-4 h-4" />
+                    </span>
+                    <h3 className="text-[15px] font-black text-slate-800 m-0">
+                      Court Availability Matrix · Wednesday, 28 October 2026
+                    </h3>
+                  </div>
+                  <span className="text-slate-500 font-semibold text-xs">
+                    Select any cell to inspect or book
+                  </span>
                 </div>
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse whitespace-nowrap">
                     <thead>
-                      <tr className="bg-[#fafbfa] text-[#718078] text-[10px] uppercase tracking-wider border-b border-[#e3eae5]">
-                        <th className="text-left py-3 px-4">Court</th>
+                      <tr className="bg-gradient-to-r from-slate-100 via-purple-50/30 to-slate-100 text-slate-700 text-[11px] font-black uppercase tracking-wider border-b border-slate-200">
+                        <th className="text-left py-3.5 px-4.5">Court</th>
                         {[
                           "09:00",
                           "10:00",
@@ -1257,7 +1521,7 @@ export default function AdminDashboardPage() {
                           "14:00",
                           "15:00",
                         ].map((t) => (
-                          <th key={t} className="text-left py-3 px-4">
+                          <th key={t} className="text-left py-3.5 px-4">
                             {t}
                           </th>
                         ))}
@@ -1272,9 +1536,9 @@ export default function AdminDashboardPage() {
                       ].map((courtName, i) => (
                         <tr
                           key={courtName}
-                          className="border-b border-[#edf1ee] hover:bg-[#f8fbf9] transition-colors"
+                          className="border-b border-slate-100 hover:bg-slate-50/60 transition-colors"
                         >
-                          <td className="py-3 px-4 font-bold text-[12.5px]">
+                          <td className="py-3.5 px-4.5 font-bold text-[13px] text-slate-800">
                             {courtName}
                           </td>
                           {[
@@ -1301,12 +1565,12 @@ export default function AdminDashboardPage() {
                                     setModalTitle("Court slot details");
                                     setModalType("slot");
                                   }}
-                                  className={`pc-pill-lift px-2.5 py-1.5 rounded-lg border text-[11px] font-bold ${
+                                  className={`px-3 py-1.5 rounded-xl border text-[11px] font-extrabold transition-all duration-200 hover:scale-105 hover:shadow-sm ${
                                     st === "Available"
-                                      ? "bg-[#e8f5ed] border-[#cce6d6] text-[#176b4d] hover:bg-[#d5ede0]"
+                                      ? "bg-gradient-to-r from-emerald-50 to-teal-50 border-emerald-300 text-emerald-900 hover:bg-emerald-100 hover:border-emerald-400"
                                       : st === "Maintenance"
-                                      ? "bg-[#fdeaea] border-[#f5c8c8] text-[#ad3d40]"
-                                      : "bg-white border-[#e3eae5] hover:border-[#176b4d] text-[#24382d]"
+                                      ? "bg-gradient-to-r from-amber-50 to-orange-50 border-amber-300 text-amber-900 hover:bg-amber-100 hover:border-amber-400"
+                                      : "bg-gradient-to-r from-sky-50 to-blue-50 border-sky-300 text-sky-900 hover:bg-sky-100 hover:border-sky-400"
                                   }`}
                                 >
                                   {st === "Available" ? "＋ Free" : st}
@@ -1328,74 +1592,117 @@ export default function AdminDashboardPage() {
             <>
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                 <div>
-                  <div className="text-[#176b4d] text-[10px] tracking-[1.5px] font-extrabold uppercase">
-                    PLAYCOURT / OPERATIONS
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-100 text-blue-900 text-[10.5px] font-black tracking-wider uppercase mb-1 shadow-sm">
+                    <FileBarChart className="w-3.5 h-3.5 text-blue-600" />
+                    PERFORMANCE &amp; LEDGER EXPORTS
                   </div>
-                  <h1 className="text-[26px] font-extrabold tracking-[-0.7px] my-1">
-                    Analytics & reports
+                  <h1 className="text-[28px] font-black tracking-[-0.8px] text-[#0f281e] my-1">
+                    Analytics &amp; reports
                   </h1>
-                  <div className="text-[#718078]">{desc}</div>
+                  <div className="text-[#556b60] text-[13.5px] font-medium">{desc}</div>
                 </div>
                 <button
                   type="button"
                   onClick={handleExportCSV}
-                  className="pc-btn-lift inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-lg bg-[#176b4d] hover:bg-[#12543c] text-white font-bold text-[12.5px]"
+                  className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black text-[13px] shadow-lg shadow-blue-500/25 hover:shadow-xl hover:scale-105 active:scale-95 transition-all"
                 >
                   <Download className="w-4 h-4" />
                   <span>Export CSV</span>
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3.5 mb-5">
-                {[
-                  ["Revenue MTD", "₹12.84L", "+8.4% month-on-month"],
-                  ["Bookings MTD", "2,841", "+12.8% month-on-month"],
-                  ["Average booking", "₹924", "Completed bookings"],
-                  ["Repeat player rate", "64.8%", "Rolling 90 days"],
-                ].map(([k, val, sub]) => (
-                  <div
-                    key={k}
-                    className="group pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] p-4 shadow-admin cursor-default"
-                  >
-                    <small className="text-[#718078]">{k}</small>
-                    <div className="text-[25px] font-extrabold my-2 group-hover:text-[#176b4d] transition-colors">
-                      {val}
-                    </div>
-                    <div className="text-[#176b4d] text-[11px] font-bold">
-                      {sub}
-                    </div>
+              {/* 4 Colorful Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#ecfdf5] via-[#f0fdf4] to-[#d1fae5]/60 border border-emerald-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-emerald-800 uppercase tracking-wider">Revenue MTD</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white grid place-items-center shadow-md shadow-emerald-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <DollarSign className="w-5 h-5" />
+                    </span>
                   </div>
-                ))}
+                  <div className="text-[32px] font-black tracking-tight text-emerald-950 my-1 group-hover:text-emerald-700 transition-colors">
+                    ₹12.84L
+                  </div>
+                  <div className="text-emerald-800 text-[11.5px] font-bold">
+                    +8.4% month-on-month
+                  </div>
+                </div>
+
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#eff6ff] via-[#f0f9ff] to-[#dbeafe]/60 border border-blue-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-blue-800 uppercase tracking-wider">Bookings MTD</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 text-white grid place-items-center shadow-md shadow-blue-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Calendar className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-blue-950 my-1 group-hover:text-blue-700 transition-colors">
+                    2,841
+                  </div>
+                  <div className="text-blue-800 text-[11.5px] font-bold">
+                    +12.8% month-on-month
+                  </div>
+                </div>
+
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#faf5ff] via-[#fdf4ff] to-[#f3e8ff]/60 border border-purple-300 shadow-sm hover:shadow-xl hover:shadow-purple-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-purple-800 uppercase tracking-wider">Average booking</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-purple-600 to-pink-400 text-white grid place-items-center shadow-md shadow-purple-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <CreditCard className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-purple-950 my-1 group-hover:text-purple-700 transition-colors">
+                    ₹924
+                  </div>
+                  <div className="text-purple-800 text-[11.5px] font-bold">
+                    Completed bookings
+                  </div>
+                </div>
+
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#fffbeb] via-[#fffdf0] to-[#fef3c7]/60 border border-amber-300 shadow-sm hover:shadow-xl hover:shadow-amber-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-amber-800 uppercase tracking-wider">Repeat player rate</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-orange-400 text-white grid place-items-center shadow-md shadow-amber-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Users className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-amber-950 my-1 group-hover:text-amber-700 transition-colors">
+                    64.8%
+                  </div>
+                  <div className="text-amber-800 text-[11.5px] font-bold">
+                    Rolling 90 days
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin p-5">
-                  <h3 className="text-[14px] font-bold mb-4">
-                    Venue occupancy performance
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5.5 hover:shadow-md transition-shadow">
+                  <h3 className="text-[15px] font-black text-slate-800 mb-4 flex items-center gap-2">
+                    <TrendingUp className="w-4 h-4 text-emerald-600" />
+                    <span>Venue occupancy performance</span>
                   </h3>
-                  <div className="space-y-3">
+                  <div className="space-y-3.5">
                     {(
                       [
-                        ["The Green Racquet Club", 91],
-                        ["Baseline Padel House", 84],
-                        ["Smash Social Arena", 78],
-                        ["Central Arena", 62],
-                      ] as [string, number][]
-                    ).map(([n, pct]) => (
+                        ["The Green Racquet Club", 91, "from-emerald-400 to-teal-600"],
+                        ["Baseline Padel House", 84, "from-sky-400 to-blue-600"],
+                        ["Smash Social Arena", 78, "from-purple-400 to-indigo-600"],
+                        ["Central Arena", 62, "from-amber-400 to-orange-600"],
+                      ] as [string, number, string][]
+                    ).map(([n, pct, grad]) => (
                       <div
                         key={n}
-                        className="group/occ p-2 -mx-2 rounded-lg hover:bg-[#f6faf7] transition-colors cursor-default"
+                        className="group/occ p-2.5 -mx-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-default"
                       >
-                        <div className="flex justify-between text-[12.5px] mb-1">
-                          <strong className="group-hover/occ:text-[#176b4d] transition-colors">
+                        <div className="flex justify-between text-[13px] mb-1.5">
+                          <strong className="group-hover/occ:text-emerald-700 transition-colors">
                             {n}
                           </strong>
-                          <span className="font-bold">{pct}%</span>
+                          <span className="font-black text-slate-700">{pct}%</span>
                         </div>
-                        <div className="h-2 bg-[#edf1ee] rounded-full overflow-hidden">
+                        <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
                           <div
                             style={{ width: `${pct}%` }}
-                            className="h-full bg-[#26744f] group-hover/occ:bg-[#1e8c59] transition-colors rounded-full"
+                            className={`h-full bg-gradient-to-r ${grad} group-hover/occ:brightness-110 transition-all rounded-full`}
                           />
                         </div>
                       </div>
@@ -1403,9 +1710,12 @@ export default function AdminDashboardPage() {
                   </div>
                 </div>
 
-                <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin p-5">
-                  <h3 className="text-[14px] font-bold mb-3">Report library</h3>
-                  <div className="divide-y divide-[#edf1ee]">
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-5.5 hover:shadow-md transition-shadow">
+                  <h3 className="text-[15px] font-black text-slate-800 mb-4 flex items-center gap-2">
+                    <Download className="w-4 h-4 text-blue-600" />
+                    <span>Report library</span>
+                  </h3>
+                  <div className="divide-y divide-slate-100">
                     {[
                       "Revenue & refunds ledger",
                       "Court booking utilisation",
@@ -1414,12 +1724,12 @@ export default function AdminDashboardPage() {
                     ].map((rep) => (
                       <div
                         key={rep}
-                        className="py-3 px-2.5 -mx-2.5 rounded-lg hover:bg-[#f6faf7] transition-colors flex items-center justify-between"
+                        className="py-3 px-2.5 -mx-2.5 rounded-xl hover:bg-slate-50 transition-colors flex items-center justify-between"
                       >
                         <div>
-                          <strong className="text-[12.5px] block">{rep}</strong>
-                          <span className="text-[11px] text-[#718078]">
-                            CSV · Demo report
+                          <strong className="text-[13px] block text-slate-800">{rep}</strong>
+                          <span className="text-[11.5px] text-slate-500 font-medium">
+                            CSV · Ready for export
                           </span>
                         </div>
                         <button
@@ -1427,7 +1737,7 @@ export default function AdminDashboardPage() {
                           onClick={() =>
                             showToast(`Demo report generated: ${rep}`)
                           }
-                          className="pc-pill-lift px-3 py-1 rounded-md bg-[#eef7f2] text-[#176b4d] font-extrabold text-[12px]"
+                          className="px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-white font-black text-[12px] shadow-sm hover:shadow hover:scale-105 transition-all"
                         >
                           Generate ↓
                         </button>
@@ -1444,13 +1754,14 @@ export default function AdminDashboardPage() {
             <>
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                 <div>
-                  <div className="text-[#176b4d] text-[10px] tracking-[1.5px] font-extrabold uppercase">
-                    PLAYCOURT / OPERATIONS
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 text-slate-900 text-[10.5px] font-black tracking-wider uppercase mb-1 shadow-sm">
+                    <SettingsIcon className="w-3.5 h-3.5 text-slate-600" />
+                    SYSTEM CONTROLS &amp; AUDIT LOGS
                   </div>
-                  <h1 className="text-[26px] font-extrabold tracking-[-0.7px] my-1">
-                    Settings & audit log
+                  <h1 className="text-[28px] font-black tracking-[-0.8px] text-[#0f281e] my-1">
+                    Settings &amp; audit log
                   </h1>
-                  <div className="text-[#718078]">{desc}</div>
+                  <div className="text-[#556b60] text-[13.5px] font-medium">{desc}</div>
                 </div>
                 <button
                   type="button"
@@ -1464,16 +1775,17 @@ export default function AdminDashboardPage() {
                       showToast("Settings saved in demo session only");
                     }
                   }}
-                  className="pc-btn-lift px-4 py-2.5 rounded-lg bg-[#176b4d] hover:bg-[#12543c] text-white font-bold text-[12.5px]"
+                  className="px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-[13px] shadow-lg shadow-emerald-500/25 hover:scale-105 active:scale-95 transition-all"
                 >
                   Save settings
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-                <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin p-5 space-y-3.5">
-                  <h3 className="text-[14px] font-bold mb-2">
-                    Platform configuration
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 mb-6">
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 space-y-4 hover:shadow-md transition-shadow">
+                  <h3 className="text-[15px] font-black text-slate-800 mb-2 flex items-center gap-2">
+                    <SlidersHorizontal className="w-4 h-4 text-emerald-600" />
+                    <span>Platform configuration</span>
                   </h3>
                   {[
                     ["Platform name", "PlayCourt"],
@@ -1483,23 +1795,26 @@ export default function AdminDashboardPage() {
                     ["Shared free group credits per day", "1 credit / day"],
                   ].map(([lbl, val]) => (
                     <div key={lbl}>
-                      <label className="block text-[11px] font-extrabold mb-1">
+                      <label className="block text-[11.5px] font-black text-slate-700 mb-1.5 uppercase tracking-wide">
                         {lbl}
                       </label>
                       <input
                         defaultValue={val}
-                        className="w-full p-2.5 rounded-lg border border-[#e3eae5] text-[12.5px]"
+                        className="w-full p-2.5 rounded-xl border border-slate-300 text-[13px] focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500"
                       />
                     </div>
                   ))}
                 </div>
 
-                <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin p-5">
+                <div className="bg-white border border-slate-200 rounded-2xl shadow-sm p-6 hover:shadow-md transition-shadow">
                   <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-[14px] font-bold m-0">System health</h3>
+                    <h3 className="text-[15px] font-black text-slate-800 m-0 flex items-center gap-2">
+                      <Activity className="w-4 h-4 text-emerald-600" />
+                      <span>System health</span>
+                    </h3>
                     {statusBadge("Demo mode")}
                   </div>
-                  <div className="divide-y divide-[#edf1ee]">
+                  <div className="divide-y divide-slate-100">
                     {[
                       ["Database", "SQLite WAL + PostgreSQL 16 DDL Ready"],
                       ["Payment gateway", "Idempotent Ledger + Webhook Contract"],
@@ -1511,24 +1826,25 @@ export default function AdminDashboardPage() {
                     ].map(([a, b]) => (
                       <div
                         key={a}
-                        className="py-3 px-2.5 -mx-2.5 rounded-lg hover:bg-[#f6faf7] transition-colors cursor-default"
+                        className="py-3 px-2.5 -mx-2.5 rounded-xl hover:bg-slate-50 transition-colors cursor-default"
                       >
-                        <strong className="text-[12.5px] block">{a}</strong>
-                        <p className="text-[11.5px] text-[#718078] m-0 mt-0.5">
+                        <strong className="text-[13px] block text-slate-800">{a}</strong>
+                        <p className="text-[11.5px] text-slate-600 m-0 mt-0.5 font-medium">
                           {b}
                         </p>
                       </div>
                     ))}
                   </div>
-                  <div className="mt-4 pt-3 border-t border-[#edf1ee]">
-                    <h4 className="text-[12px] font-extrabold text-[#176b4d] uppercase tracking-wider mb-2">
-                      Recent Audit Trail (admin_audit_logs)
+                  <div className="mt-5 pt-4 border-t border-slate-100">
+                    <h4 className="text-[12px] font-black text-emerald-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Recent Audit Trail (admin_audit_logs)</span>
                     </h4>
-                    <div className="space-y-1.5 text-[11.5px] text-[#718078]">
+                    <div className="space-y-1.5 text-[11.5px] text-slate-600">
                       {auditLogs.slice(0, 5).map((entry, idx) => (
                         <div
                           key={idx}
-                          className="truncate px-2 py-1 -mx-2 rounded hover:bg-[#f6faf7] hover:text-[#174b35] transition-colors cursor-default"
+                          className="truncate px-2.5 py-1 -mx-2.5 rounded-lg hover:bg-emerald-50 hover:text-emerald-900 transition-colors cursor-default font-medium"
                         >
                           • {entry}
                         </div>
@@ -1545,13 +1861,14 @@ export default function AdminDashboardPage() {
             <>
               <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-6">
                 <div>
-                  <div className="text-[#176b4d] text-[10px] tracking-[1.5px] font-extrabold uppercase">
-                    PLAYCOURT / OPERATIONS
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-900 text-[10.5px] font-black tracking-wider uppercase mb-1 shadow-sm">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>{label}</span>
                   </div>
-                  <h1 className="text-[26px] font-extrabold tracking-[-0.7px] my-1">
+                  <h1 className="text-[28px] font-black tracking-[-0.8px] text-[#0f281e] my-1">
                     {title}
                   </h1>
-                  <div className="text-[#718078]">{desc}</div>
+                  <div className="text-[#556b60] text-[13.5px] font-medium">{desc}</div>
                 </div>
 
                 <button
@@ -1571,28 +1888,42 @@ export default function AdminDashboardPage() {
                       ]);
                     }
                   }}
-                  className="pc-btn-lift px-4 py-2.5 rounded-lg bg-[#176b4d] hover:bg-[#12543c] text-white font-bold text-[12.5px] shrink-0"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-600 hover:to-teal-700 text-white font-black text-[13px] shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:scale-105 active:scale-95 transition-all shrink-0"
                 >
-                  {page === "payments"
-                    ? "Reconcile transactions"
-                    : `＋ Add ${label.split(" ")[0]}`}
+                  <Plus className="w-4 h-4" />
+                  <span>
+                    {page === "payments"
+                      ? "Reconcile transactions"
+                      : `Add ${label.split(" ")[0]}`}
+                  </span>
                 </button>
               </div>
 
-              {/* Module Summary Stats */}
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 mb-5">
-                <div className="group pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] p-4 shadow-admin cursor-default">
-                  <small className="text-[#718078]">Records</small>
-                  <div className="text-[25px] font-extrabold my-1.5 group-hover:text-[#176b4d] transition-colors">
+              {/* 3 Colorful Module Summary Stats */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#ecfdf5] via-[#f0fdf4] to-[#d1fae5]/60 border border-emerald-300 shadow-sm hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-emerald-800 uppercase tracking-wider">Total records</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-400 text-white grid place-items-center shadow-md shadow-emerald-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Layers className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-emerald-950 my-1 group-hover:text-emerald-700 transition-colors">
                     {(adminData[page] || []).length}
                   </div>
-                  <div className="text-[#176b4d] text-[11px] font-bold">
-                    Illustrative demo data
+                  <div className="text-emerald-800 text-[11.5px] font-bold">
+                    Active dataset
                   </div>
                 </div>
-                <div className="group pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] p-4 shadow-admin cursor-default">
-                  <small className="text-[#718078]">Needs attention</small>
-                  <div className="text-[25px] font-extrabold my-1.5 group-hover:text-[#176b4d] transition-colors">
+
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#fff1f2] via-[#fff5f5] to-[#ffe4e6]/60 border border-rose-300 shadow-sm hover:shadow-xl hover:shadow-rose-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-rose-800 uppercase tracking-wider">Needs attention</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-rose-500 to-red-400 text-white grid place-items-center shadow-md shadow-rose-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <AlertCircle className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-rose-950 my-1 group-hover:text-rose-700 transition-colors">
                     {
                       (adminData[page] || []).filter((r) =>
                         [
@@ -1605,38 +1936,44 @@ export default function AdminDashboardPage() {
                       ).length
                     }
                   </div>
-                  <div className="text-[#176b4d] text-[11px] font-bold">
-                    Review flagged records
+                  <div className="text-rose-800 text-[11.5px] font-bold">
+                    Review flagged items
                   </div>
                 </div>
-                <div className="group pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] p-4 shadow-admin cursor-default">
-                  <small className="text-[#718078]">Last updated</small>
-                  <div className="text-[25px] font-extrabold my-1.5 group-hover:text-[#176b4d] transition-colors">
+
+                <div className="group rounded-2xl p-5 bg-gradient-to-br from-[#eff6ff] via-[#f0f9ff] to-[#dbeafe]/60 border border-blue-300 shadow-sm hover:shadow-xl hover:shadow-blue-500/15 hover:-translate-y-1.5 transition-all duration-300 cursor-default">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[12.5px] font-bold text-blue-800 uppercase tracking-wider">Last updated</span>
+                    <span className="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 text-white grid place-items-center shadow-md shadow-blue-500/30 group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                      <Clock className="w-5 h-5" />
+                    </span>
+                  </div>
+                  <div className="text-[32px] font-black tracking-tight text-blue-950 my-1 group-hover:text-blue-700 transition-colors">
                     Just now
                   </div>
-                  <div className="text-[#176b4d] text-[11px] font-bold">
-                    Interactive demo session
+                  <div className="text-blue-800 text-[11.5px] font-bold">
+                    Interactive session
                   </div>
                 </div>
               </div>
 
               {/* Filterable Data Table Card */}
-              <div className="pc-admin-card bg-white border border-[#e3eae5] rounded-[13px] shadow-admin overflow-hidden">
-                <div className="p-3.5 border-b border-[#e3eae5] flex flex-wrap items-center gap-2.5">
-                  <div className="relative flex-1 min-w-[210px] group">
-                    <Search className="w-4 h-4 text-[#718078] group-focus-within:text-[#176b4d] transition-colors absolute left-3 top-1/2 -translate-y-1/2" />
+              <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+                <div className="p-4 bg-gradient-to-r from-slate-50 via-emerald-50/20 to-slate-50 border-b border-slate-200 flex flex-wrap items-center gap-3">
+                  <div className="relative flex-1 min-w-[220px] group">
+                    <Search className="w-4 h-4 text-slate-400 group-focus-within:text-emerald-600 transition-colors absolute left-3.5 top-1/2 -translate-y-1/2" />
                     <input
                       type="text"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
-                      placeholder={`Search ${page}...`}
-                      className="w-full pl-9 pr-3 py-2 rounded-lg border border-[#e3eae5] text-[12.5px]"
+                      placeholder={`Search in ${label}...`}
+                      className="w-full pl-10 pr-3.5 py-2 rounded-xl border border-slate-300 text-[13px] focus:ring-2 focus:ring-emerald-200 focus:border-emerald-500 transition-all bg-white shadow-sm"
                     />
                   </div>
                   <select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    className="p-2 rounded-lg border border-[#e3eae5] bg-white text-[12.5px] cursor-pointer"
+                    className="py-2 px-3.5 rounded-xl border border-slate-300 bg-white text-[13px] font-bold text-slate-700 cursor-pointer shadow-sm hover:border-emerald-400 transition-all"
                   >
                     <option>All statuses</option>
                     {[
@@ -1663,24 +2000,25 @@ export default function AdminDashboardPage() {
                   <button
                     type="button"
                     onClick={handleExportCSV}
-                    className="pc-pill-lift px-3.5 py-2 rounded-lg border border-[#e3eae5] hover:border-[#176b4d] bg-white font-bold text-[12px]"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-sky-300 bg-gradient-to-r from-sky-50 to-indigo-50 hover:from-sky-100 hover:to-indigo-100 text-sky-900 font-black text-[12.5px] shadow-sm hover:shadow hover:scale-105 transition-all"
                   >
-                    ↓ Export CSV
+                    <Download className="w-3.5 h-3.5 text-sky-700" />
+                    <span>Export CSV</span>
                   </button>
                 </div>
 
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse whitespace-nowrap">
                     <thead>
-                      <tr className="bg-[#fafbfa] text-[#718078] text-[10px] uppercase tracking-wider border-b border-[#e3eae5]">
+                      <tr className="bg-gradient-to-r from-slate-100 via-emerald-50/40 to-slate-100 text-slate-700 text-[11px] font-black uppercase tracking-wider border-b border-slate-200">
                         {(TABLE_HEADERS[page] || ["Item", "Details"]).map(
                           (h) => (
-                            <th key={h} className="text-left py-3 px-4">
+                            <th key={h} className="text-left py-3.5 px-4.5">
                               {h}
                             </th>
                           )
                         )}
-                        <th className="text-left py-3 px-4">Actions</th>
+                        <th className="text-left py-3.5 px-4.5">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1688,20 +2026,20 @@ export default function AdminDashboardPage() {
                         currentRows.map((r, i) => (
                           <tr
                             key={i}
-                            className="border-b border-[#edf1ee] hover:bg-[#eef7f2] transition-colors text-[12.5px]"
+                            className="border-b border-slate-100 hover:bg-gradient-to-r hover:from-emerald-50/50 hover:to-teal-50/30 transition-colors text-[13px]"
                           >
                             {r.map((v, j) => (
-                              <td key={j} className="py-3 px-4">
+                              <td key={j} className="py-3.5 px-4.5">
                                 {j === 0 ? (
-                                  <strong>{v}</strong>
+                                  <strong className="text-emerald-950 font-bold">{v}</strong>
                                 ) : isStatusValue(v) ? (
                                   statusBadge(v)
                                 ) : (
-                                  v
+                                  <span className="text-slate-700 font-medium">{v}</span>
                                 )}
                               </td>
                             ))}
-                            <td className="py-3 px-4">
+                            <td className="py-3.5 px-4.5">
                               <button
                                 type="button"
                                 onClick={() => {
@@ -1709,9 +2047,10 @@ export default function AdminDashboardPage() {
                                   setModalTitle("Record details");
                                   setModalType("record");
                                 }}
-                                className="pc-pill-lift px-2.5 py-1 rounded-md hover:bg-[#d9f0e2] text-[#176b4d] font-extrabold text-[12px]"
+                                className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold text-[12px] shadow-sm hover:shadow hover:scale-105 transition-all"
                               >
-                                View details ↗
+                                <span>View details</span>
+                                <span>↗</span>
                               </button>
                             </td>
                           </tr>
@@ -1720,7 +2059,7 @@ export default function AdminDashboardPage() {
                         <tr>
                           <td
                             colSpan={8}
-                            className="py-8 text-center text-[#718078]"
+                            className="py-10 text-center text-slate-500 font-bold"
                           >
                             No matching records found.
                           </td>
@@ -1730,9 +2069,9 @@ export default function AdminDashboardPage() {
                   </table>
                 </div>
 
-                <div className="p-3.5 text-[#718078] text-[11.5px]">
-                  Showing {currentRows.length} demo records · Filters work on
-                  this page
+                <div className="p-4 bg-slate-50/60 border-t border-slate-100 text-slate-500 font-medium text-[12px] flex items-center justify-between">
+                  <span>Showing {currentRows.length} demo records</span>
+                  <span className="text-emerald-700 font-bold">● Real-time search &amp; filter active</span>
                 </div>
               </div>
             </>
