@@ -1380,17 +1380,6 @@ export default function AdminDashboardPage() {
               </div>
             </>
           )}
-                              {isStatusValue(v) ? statusBadge(v) : v}
-                            </td>
-                          ))}
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            </>
-          )}
 
           {/* 2. COURT SCHEDULE MATRIX */}
           {page === "schedule" && (
