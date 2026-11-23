@@ -30,6 +30,8 @@ import {
   Building2,
   BarChart3,
   TrendingUp,
+  ShieldCheck,
+  SlidersHorizontal,
 } from "lucide-react";
 import { usePlayCourt } from "@/context/PlayCourtContext";
 
